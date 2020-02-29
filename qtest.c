@@ -11,6 +11,7 @@
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
+
 #include "dudect/fixture.h"
 
 /* Our program needs to use regular malloc/free */
@@ -29,9 +30,8 @@
  * OK as long as head field of queue_t structure is in first position in
  * solution code
  */
-#include "queue.h"
-
 #include "console.h"
+#include "queue.h"
 #include "report.h"
 
 /* Settable parameters */
@@ -168,6 +168,9 @@ static bool do_free(int argc, char *argv[])
 static void fill_rand_string(char *buf, size_t buf_size)
 {
     size_t len = 0;
+
+    if (buf_size < MIN_RANDSTR_LEN)
+        buf_size = MIN_RANDSTR_LEN;
     while (len < MIN_RANDSTR_LEN)
         len = rand() % buf_size;
 

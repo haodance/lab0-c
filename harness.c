@@ -167,6 +167,8 @@ void *test_calloc(size_t nelem, size_t elsize)
     /* Reference: Malloc tutorial
      * https://danluu.com/malloc-tutorial/
      */
+    if ((nelem * elsize) > __SIZE_MAX__)
+        return NULL;
     size_t size = nelem * elsize;  // TODO: check for overflow
     void *ptr = test_malloc(size);
     memset(ptr, 0, size);
