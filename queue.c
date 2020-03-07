@@ -6,6 +6,8 @@
 
 #include "harness.h"
 
+list_ele_t *sort(list_ele_t *start);
+
 /*
  * Create empty queue.
  * Return NULL if could not allocate space.
@@ -213,43 +215,39 @@ void q_sort(queue_t *q)
     if (q->size <= 1)
         return;
 
-    list_ele_t *head = q->head;
-    q->head = q->tail = NULL;
-    list_ele_t *currTravEle, *nextTravEle;
-    list_ele_t *currEle, *nextEle;
+    q->head = sort(q->head);
+}
 
-    while (head) {
-        currTravEle = head;
-        nextTravEle = currTravEle->next;
-        list_ele_t *prevEle = NULL;
-        currEle = currTravEle;
-        nextEle = nextTravEle;
+list_ele_t *sort(list_ele_t *start)
+{
+    if (!start || !start->next)
+        return start;
+    list_ele_t *left = start;
+    list_ele_t *right = left->next;
+    left->next = NULL;
 
-        while (nextTravEle) {
-            if (strcmp(currTravEle->value, nextTravEle->value) > 0) {
-                if (strcmp(currEle->value, nextTravEle->value) > 0) {
-                    prevEle = currTravEle;
-                    currEle = nextTravEle;
-                    nextEle = nextTravEle->next;
-                }
+    left = sort(left);
+    right = sort(right);
+
+    for (list_ele_t *merge = NULL; left || right;) {
+        if (!right || (left && strcmp(left->value, right->value) < 0)) {
+            if (!merge) {
+                start = merge = left;
+            } else {
+                merge->next = left;
+                merge = merge->next;
             }
-
-            currTravEle = currTravEle->next;
-            nextTravEle = nextTravEle->next;
-        }
-
-        if (!q->head) {
-            q->head = q->tail = currEle;
-            currEle->next = NULL;
+            left = left->next;
         } else {
-            q->tail->next = currEle;
-            q->tail = currEle;
-            currEle->next = NULL;
+            if (!merge) {
+                start = merge = right;
+            } else {
+                merge->next = right;
+                merge = merge->next;
+            }
+            right = right->next;
         }
-
-        if (!prevEle)
-            head = nextEle;
-        else
-            prevEle->next = nextEle;
     }
+
+    return start;
 }
